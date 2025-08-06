@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>注音猜猜樂</title>
+  <style>
+    body {
+      font-family: "Noto Sans TC", sans-serif;
+      text-align: center;
+      padding: 30px;
+      background: #f4f4f4;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    #keyboard {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 500px;
+      margin: 0 auto;
+      gap: 8px;
+    }
+    .key {
+      font-size: 1.5rem;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 8px;
+      background-color: #ffffff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .key.correct {
+      background-color: #4caf50;
+      color: white;
+    }
+    .key.incorrect {
+      background-color: #cccccc;
+      color: white;
+    }
+    .key:disabled {
+      cursor: not-allowed;
+    }
+    #result {
+      margin-top: 30px;
+      font-size: 1.25rem;
+    }
+    #restartBtn, #shareBtn {
+      margin-top: 15px;
+      padding: 8px 16px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #restartBtn {
+      background-color: #2196f3;
+      color: white;
+    }
+    #shareBtn {
+      background-color: #4caf50;
+      color: white;
+      display: none;
+    }
+    /* 彈出提示 */
+    #popup {
+      display: none;
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>注音猜猜樂</h1>
+  <div id="keyboard"></div>
+  <div id="result"></div>
+  <button id="restartBtn" onclick="restartGame()">重新開始</button>
+  <button id="shareBtn" onclick="shareResult()">分享戰績</button>
+  <div id="popup">已複製到剪貼簿！</div>
+
+  <script>
+    const bopomofo = [
+      "ㄅ","ㄆ","ㄇ","ㄈ","ㄉ","ㄊ","ㄋ","ㄌ",
+      "ㄍ","ㄎ","ㄏ","ㄐ","ㄑ","ㄒ","ㄓ","ㄔ",
+      "ㄕ","ㄖ","ㄗ","ㄘ","ㄙ","ㄧ","ㄨ","ㄩ",
+      "ㄚ","ㄛ","ㄜ","ㄝ","ㄞ","ㄟ","ㄠ","ㄡ",
+      "ㄢ","ㄣ","ㄤ","ㄥ","ㄦ"
+    ];
+    let answer = "";
+    let guessCount = 0;
+    const maxGuess = bopomofo.length;
+
+    const keyboardDiv = document.getElementById("keyboard");
+    const resultDiv = document.getElementById("result");
+    const shareBtn = document.getElementById("shareBtn");
+    const popup = document.getElementById("popup");
+
+    function shuffleAnswer() {
+      answer = bopomofo[Math.floor(Math.random() * bopomofo.length)];
+    }
+
+    function createKeyboard() {
+      keyboardDiv.innerHTML = "";
+      bopomofo.forEach(char => {
+        const btn = document.createElement("button");
+        btn.textContent = char;
+        btn.className = "key";
+        btn.onclick = () => handleGuess(btn, char);
+        keyboardDiv.appendChild(btn);
+      });
+    }
+
+    function handleGuess(btn, guess) {
+      guessCount++;
+      if (guess === answer) {
+        btn.classList.add("correct");
+        resultDiv.textContent = `🎉 恭喜你第 ${guessCount} 次猜對！答案是 ${answer}`;
+        disableAllKeys();
+        shareBtn.style.display = "inline-block";
+      } else {
+        btn.classList.add("incorrect");
+        btn.disabled = true;
+        resultDiv.textContent = `❌ ${guess} 錯誤，繼續猜！（已猜 ${guessCount} 次）`;
+      }
+    }
+
+    function disableAllKeys() {
+      document.querySelectorAll(".key").forEach(btn => btn.disabled = true);
+    }
+
+    function restartGame() {
+      shuffleAnswer();
+      createKeyboard();
+      resultDiv.textContent = "";
+      guessCount = 0;
+      shareBtn.style.display = "none";
+    }
+
+    function shareResult() {
+      const emojiLine = ("⬛\n").repeat(guessCount - 1) + "🟩";
+      const text =
+        `注音猜猜樂\n${guessCount}/${maxGuess}\n${emojiLine}\n${window.location.href}`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        popup.style.display = "block";
+        setTimeout(() => popup.style.display = "none", 2000);
+      }).catch(() => {
+        alert("❌ 複製失敗，請手動複製。");
+      });
+    }
+
+    restartGame();
+  </script>
+</body>
+</html>
