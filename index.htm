@@ -147,19 +147,28 @@
     }
 
     function shareResult() {
-      const emojiLine = ("⬛\n").repeat(guessCount - 1) + "🟩";
-      const text =
-        `注音猜猜樂\n${guessCount}/${maxGuess}\n${emojiLine}\nhttps://bopomofo.langcheng.uk`;
+  const emojiLine = ("⬛\n").repeat(guessCount - 1) + "🟩";
+  const fixedUrl = "https://bopomofo.langcheng.uk";
+  const text =
+    `注音猜猜樂\n${guessCount}/${maxGuess}\n${emojiLine}\n${fixedUrl}`;
 
-      navigator.clipboard.writeText(text).then(() => {
-        popup.style.display = "block";
-        setTimeout(() => popup.style.display = "none", 2000);
-      }).catch(() => {
-        alert("❌ 複製失敗，請手動複製。");
-      });
-    }
+  navigator.clipboard.writeText(text).then(() => {
+    popup.style.display = "block";
+    setTimeout(() => popup.style.display = "none", 2000);
+  }).catch(() => {
+    alert("❌ 複製失敗，請手動複製。");
+  });
+}
 
     restartGame();
   </script>
 </body>
+  <script>
+  if (window.location.search.length > 0) {
+    const cleanUrl = window.location.origin + window.location.pathname;
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+</script>
+
 </html>
+
