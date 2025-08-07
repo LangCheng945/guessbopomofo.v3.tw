@@ -149,7 +149,7 @@
     function shareResult() {
       const emojiLine = ("⬛\n").repeat(guessCount - 1) + "🟩";
       const text =
-        `注音猜猜樂\n${guessCount}/${maxGuess}\n${emojiLine}\n${window.location.href}`;
+        `注音猜猜樂\n${guessCount}/${maxGuess}\n${emojiLine}\nhttps://bopomofo.langcheng.uk`;
 
       navigator.clipboard.writeText(text).then(() => {
         popup.style.display = "block";
