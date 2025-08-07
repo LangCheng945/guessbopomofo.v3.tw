@@ -65,7 +65,6 @@
       color: white;
       display: none;
     }
-    /* 彈出提示 */
     #popup {
       display: none;
       position: fixed;
@@ -147,28 +146,42 @@
     }
 
     function shareResult() {
-  const emojiLine = ("⬛\n").repeat(guessCount - 1) + "🟩";
-  const fixedUrl = "https://bopomofo.langcheng.uk";
-  const text =
-    `注音猜猜樂\n${guessCount}/${maxGuess}\n${emojiLine}\n${fixedUrl}`;
+      const emojiLine = ("⬛\n").repeat(guessCount - 1) + "🟩";
+      const fixedUrl = "https://bopomofo.langcheng.uk";
+      const shareText = `注音猜猜樂\n${guessCount}/${maxGuess}\n${emojiLine}\n${fixedUrl}`;
 
-  navigator.clipboard.writeText(text).then(() => {
-    popup.style.display = "block";
-    setTimeout(() => popup.style.display = "none", 2000);
-  }).catch(() => {
-    alert("❌ 複製失敗，請手動複製。");
-  });
-}
+      // 使用 clipboard API
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(shareText).then(() => {
+          popup.style.display = "block";
+          setTimeout(() => popup.style.display = "none", 2000);
+        }).catch(() => {
+          alert("❌ 複製失敗，請手動複製。");
+        });
+      } else {
+        // 備援方案
+        const textarea = document.createElement("textarea");
+        textarea.value = shareText;
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand("copy");
+          popup.style.display = "block";
+          setTimeout(() => popup.style.display = "none", 2000);
+        } catch {
+          alert("❌ 複製失敗，請手動複製。");
+        }
+        document.body.removeChild(textarea);
+      }
+    }
+
+    // 移除網址參數
+    if (window.location.search.length > 0) {
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
 
     restartGame();
   </script>
 </body>
-  <script>
-  if (window.location.search.length > 0) {
-    const cleanUrl = window.location.origin + window.location.pathname;
-    window.history.replaceState({}, document.title, cleanUrl);
-  }
-</script>
-
 </html>
-
